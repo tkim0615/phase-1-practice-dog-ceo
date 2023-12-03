@@ -1,60 +1,60 @@
-console.log('%c HI', 'color: firebrick')
-let breedsArray = []
+// // Challenge 4
+// // Once we are able to load all of the dog breeds onto the page, add JavaScript so that the user can filter breeds that start with a 
+// particular letter using a dropdownLinks to an external site..
+
+// // For example, if the user selects 'a' in the dropdown, only show the breeds with names that start with the letter a. For simplicity, 
+// the dropdown only includes the letters a-d. However, we can imagine expanding this to include the entire alphabet.
 
 
-document.addEventListener('DOMContentLoaded', ()=> {
-
-
-    fetch("https://dog.ceo/api/breeds/image/random/4")
-        .then(resp => resp.json())
-        .then(images => {
-            renderDogs(images)
-        })
-    fetch("https://dog.ceo/api/breeds/list/all")
-        .then(resp => resp.json())
-        .then(breeds => {
-            breedsArray = Object.keys(breeds.message)
-            renderDogBreed(breedsArray)
-        })
-
-        const dropDown = document.querySelector('#breed-dropdown')
-        dropDown.addEventListener('change', handleChange)
-
+//dom elements
+const breedUrl = "https://dog.ceo/api/breeds/list/all";
+const ImageContainer = document.querySelector('#dog-image-container')
+const imgUrl = "https://dog.ceo/api/breeds/image/random/4"
+const ulELement = document.querySelector('#dog-breeds')
+const dropDownMenu = document.querySelector('#breed-dropdown')
+let breedsArray
+let liElement
+//fetch
+fetch(imgUrl)
+    .then(resp => resp.json())
+    .then(dogImageObject => {
+        let dogImages = dogImageObject.message
+        renderImage(dogImages)
     })
-  
-
-function renderDogs(images){
-    images.message.forEach(message => {
-        const imgElement = document.createElement('img')
-        imgElement.src = message
-        const divImgELement = document.querySelector('#dog-image-container')
-        divImgELement.appendChild(imgElement)
+fetch(breedUrl)
+    .then(resp => resp.json())
+    .then(breeds => {
+         breedsArray = Object.keys(breeds.message)
+        renderBreed(breedsArray)
     })
-}
-function renderDogBreed(breedsArray){
-       //breeds is an object and breeds.message is the array of breed. dot.xxx indicate it's object
-    breedsArray.forEach(breed => {                //breedsarray is not defined globally so it can be accessed for dropdown funciton below
-        const breedUl = document.querySelector('#dog-breeds')
-        const breedLiElement = document.createElement('li')
-        breedLiElement.textContent = breed
-        breedUl.appendChild(breedLiElement)
     
-        breedLiElement.addEventListener('click', changeColor)
-    })
+dropDownMenu.addEventListener('change', filter)
+
+//render functions
+function renderImage(dogImages){
+    dogImages.forEach(dogImage => {
+        const imgElement = document.createElement('img')
+        imgElement.src = dogImage
+        ImageContainer.appendChild(imgElement)
+    })}
+function renderBreed(breedsArray){
+    breedsArray.forEach(breed => {
+         liElement = document.createElement('li')
+        liElement.textContent = breed
+        ulELement.appendChild(liElement)
+
+        liElement.addEventListener('click', changeColor)  //must be inside here so that event listener is attached to each lielement created
+    })}
+
+
+//callback functionss
+function changeColor(e){
+    e.target.style.color = 'red'
 }
 
-//callbacks
-function changeColor(ee){
-    ee.target.style.color = "yellow"
-}
-
-function handleChange(e){
-    const breedUl = document.querySelector('#dog-breeds')
-    breedUl.innerHTML = ' '
+function filter(e){
+    ulELement.innerHTML = ' '
     let letter = e.target.value
-    let newFiltered = breedsArray.filter(breed => breed.charAt(0) === letter)
-    console.log(newFiltered)
-    renderDogBreed(newFiltered)   
-
-
+    let filteredBreed = breedsArray.filter(breed => breed.charAt(0) === letter)
+    renderBreed(filteredBreed)
 }
