@@ -28,8 +28,6 @@ fetch(breedUrl)
         renderBreed(breedsArray)
     })
     
-dropDownMenu.addEventListener('change', filter)
-
 //render functions
 function renderImage(dogImages){
     dogImages.forEach(dogImage => {
@@ -58,3 +56,5 @@ function filter(e){
     let filteredBreed = breedsArray.filter(breed => breed.charAt(0) === letter)
     renderBreed(filteredBreed)
 }
+
+dropDownMenu.addEventListener('change', filter)
