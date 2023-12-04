@@ -1,60 +1,51 @@
-console.log('%c HI', 'color: firebrick')
-let breedsArray = []
-
-
-document.addEventListener('DOMContentLoaded', ()=> {
-
-
-    fetch("https://dog.ceo/api/breeds/image/random/4")
-        .then(resp => resp.json())
-        .then(images => {
-            renderDogs(images)
-        })
-    fetch("https://dog.ceo/api/breeds/list/all")
-        .then(resp => resp.json())
-        .then(breeds => {
-            breedsArray = Object.keys(breeds.message)
-            renderDogBreed(breedsArray)
-        })
-
-        const dropDown = document.querySelector('#breed-dropdown')
-        dropDown.addEventListener('change', handleChange)
-
+//dom elements
+const dogImageContainer = document.querySelector('#dog-image-container')
+const dogBreedContainer = document.getElementById('dog-breeds')
+const dropDown = document.getElementById('breed-dropdown')
+let breedsArray
+//fetch
+const breedUrl = "https://dog.ceo/api/breeds/list/all"
+fetch("https://dog.ceo/api/breeds/image/random/4")
+    .then(resp => resp.json())
+    .then(dogImages => {
+        renderImages(dogImages)
     })
-  
+fetch(breedUrl)
+    .then(resp => resp.json())
+    .then(breeds => {
+        breedsArray = Object.keys(breeds.message)
+        renderBreeds(breedsArray)
+    })
 
-function renderDogs(images){
-    images.message.forEach(message => {
-        const imgElement = document.createElement('img')
-        imgElement.src = message
-        const divImgELement = document.querySelector('#dog-image-container')
-        divImgELement.appendChild(imgElement)
-    })
-}
-function renderDogBreed(breedsArray){
-       //breeds is an object and breeds.message is the array of breed. dot.xxx indicate it's object
-    breedsArray.forEach(breed => {                //breedsarray is not defined globally so it can be accessed for dropdown funciton below
-        const breedUl = document.querySelector('#dog-breeds')
-        const breedLiElement = document.createElement('li')
-        breedLiElement.textContent = breed
-        breedUl.appendChild(breedLiElement)
-    
-        breedLiElement.addEventListener('click', changeColor)
-    })
+//render functions
+function renderImages(dogImages){
+    let dogImageArray = dogImages.message
+    dogImageArray.forEach(dogImage => {
+        const dogImageElement = document.createElement('img')
+        dogImageElement.src = dogImage
+        dogImageContainer.append(dogImageElement)
+    })}
+function renderBreeds(breedsArray){
+    breedsArray.map(breed => {
+        const breedLi = document.createElement('li')
+        breedLi.textContent = breed
+        dogBreedContainer.append(breedLi)
+
+    breedLi.addEventListener('click', changeColor)
+    })}
+
+
+//callback function
+function changeColor(e){
+    e.target.style.color = 'Red'
 }
 
-//callbacks
-function changeColor(ee){
-    ee.target.style.color = "yellow"
-}
 
-function handleChange(e){
-    const breedUl = document.querySelector('#dog-breeds')
-    breedUl.innerHTML = ' '
+dropDown.addEventListener('change', e =>{
+    dogBreedContainer.innerHTML = ' ' 
     let letter = e.target.value
-    let newFiltered = breedsArray.filter(breed => breed.charAt(0) === letter)
-    console.log(newFiltered)
-    renderDogBreed(newFiltered)   
+    let filteredBreed = breedsArray.filter(breed => breed.charAt(0) === letter)
+    renderBreeds(filteredBreed)
+    
+})
 
-
-}
